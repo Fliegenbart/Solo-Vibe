@@ -1,127 +1,143 @@
-# Solo-Vibe: Technische Architektur (MVP)
+# Architecture
 
-## Überblick
+## System overview
 
 ```
 ┌─────────────┐     HTTPS      ┌──────────────┐     SSH      ┌──────────────┐
-│   Browser    │ ◄────────────► │  Solo-Vibe    │ ──────────► │  Server des   │
-│   (Web-App)  │                │  Backend      │             │  Nutzers      │
+│   Browser    │ ◄────────────► │  Solo-Vibe    │ ──────────► │  User's      │
+│   (Web App)  │                │  Backend      │             │  Server      │
 └─────────────┘                └──────┬───────┘             └──────────────┘
                                       │
                                       ▼
                                ┌──────────────┐
                                │  PostgreSQL   │
-                               │  + Git-Repos  │
+                               │  + Git Repos  │
                                │  (Filesystem) │
                                └──────────────┘
 ```
 
-## Backend
+Solo-Vibe is a web application. The user interacts through a browser. The backend stores projects as Git repositories (invisible to the user) and deploys to the user's server via SSH.
 
-### Tech-Stack
+## Core objects
 
-| Komponente | Technologie | Begründung |
-|------------|-------------|------------|
-| API-Server | **Node.js + Hono** (oder Fastify) | Schnell, leichtgewichtig, TypeScript-native |
-| Datenbank | **PostgreSQL** | Zuverlässig, JSON-Support für flexible Metadaten |
-| Git-Operationen | **isomorphic-git** oder **git CLI** | Git als Versionierungsengine, nie als Nutzer-Feature |
-| SSH-Client | **ssh2** (Node.js Library) | Server-Verbindung, Deployment, Log-Streaming |
-| File Storage | **Filesystem** (Git-Repos auf Disk) | Einfach, schnell, exportierbar. Object Storage (S3) später. |
-| Auth | **Lucia** oder **Better Auth** | Session-basiert, einfach, selbst-gehostet |
-| Frontend | **SvelteKit** oder **Next.js** | SSR, schnell, gute DX |
-| Queue | **BullMQ + Redis** | Für asynchrone Jobs (Deploy, Server-Setup) |
+Solo-Vibe has 6 core entities. Each has a user-facing meaning and a technical implementation.
 
-### API-Struktur
+| User concept | Internal implementation | Description |
+|---|---|---|
+| **Project** | Git repository + DB metadata | Everything belonging to one idea: code, versions, settings |
+| **Snapshot** | Git commit | A saved state of the project at a point in time |
+| **Release** | Git tag on a commit | A snapshot marked as stable / ready to deploy |
+| **Live version** | Last successfully deployed tag | What's currently running on the user's server |
+| **Server connection** | SSH credentials + server profile | The bridge between Solo-Vibe and the user's VPS |
+| **History** | Git log + deployment log + event log | Unified timeline of everything that happened |
 
 ```
-POST   /api/projects                    → Projekt erstellen
-GET    /api/projects                    → Alle Projekte des Nutzers
-GET    /api/projects/:id                → Projekt-Detail
-DELETE /api/projects/:id                → Projekt archivieren
-POST   /api/projects/:id/upload         → Code hochladen
-GET    /api/projects/:id/download       → ZIP-Export
-
-POST   /api/projects/:id/snapshots      → Stand speichern
-GET    /api/projects/:id/snapshots      → Alle Stände
-GET    /api/projects/:id/snapshots/:sid → Stand-Detail
-
-POST   /api/projects/:id/releases       → Veröffentlichungsstand markieren
-GET    /api/projects/:id/releases       → Alle Veröffentlichungsstände
-
-POST   /api/projects/:id/deploy         → Live schalten
-POST   /api/projects/:id/rollback       → Zurücksetzen
-GET    /api/projects/:id/deploy/status  → Deploy-Status (SSE/WebSocket)
-
-GET    /api/projects/:id/logs           → Server-Protokoll (SSE)
-
-POST   /api/servers                     → Server verbinden
-GET    /api/servers/:id                 → Server-Details
-POST   /api/servers/:id/test            → Verbindung testen
-POST   /api/servers/:id/setup           → Server einrichten
-DELETE /api/servers/:id                 → Server trennen
-
-GET    /api/projects/:id/secrets        → Geheime Einstellungen
-PUT    /api/projects/:id/secrets        → Einstellungen aktualisieren
-
-GET    /api/projects/:id/timeline       → Vereinigter Verlauf
+Project
+├── Snapshot (many)
+│   └── Release (marked snapshots)
+│       └── Live version (the currently deployed release)
+├── Server connection (one per project, optional)
+└── History (aggregated from all events)
 ```
 
----
+## Tech stack
 
-## Datenmodell
+| Component | Technology | Rationale |
+|---|---|---|
+| API server | Node.js + Hono (or Fastify) | Fast, lightweight, TypeScript-native |
+| Database | PostgreSQL | Reliable, JSON support for flexible metadata |
+| Git operations | isomorphic-git or git CLI | Git as versioning engine, never as user-facing feature |
+| SSH client | ssh2 (Node.js) | Server connection, deployment, log streaming |
+| File storage | Filesystem (Git repos on disk) | Simple, fast, exportable. Object storage (S3) later. |
+| Auth | Lucia or Better Auth | Session-based, simple, self-hosted |
+| Frontend | SvelteKit or Next.js | SSR, fast, good DX |
+| Job queue | BullMQ + Redis | Async jobs: deploy, server setup |
 
-### Tabellen
+## API structure
+
+```
+Projects
+  POST   /api/projects                    Create project
+  GET    /api/projects                    List user's projects
+  GET    /api/projects/:id                Project detail
+  DELETE /api/projects/:id                Archive project
+  POST   /api/projects/:id/upload         Upload code
+  GET    /api/projects/:id/download       ZIP export
+
+Snapshots
+  POST   /api/projects/:id/snapshots      Save snapshot
+  GET    /api/projects/:id/snapshots      List snapshots
+  GET    /api/projects/:id/snapshots/:sid  Snapshot detail
+
+Releases
+  POST   /api/projects/:id/releases       Mark release
+  GET    /api/projects/:id/releases       List releases
+
+Deployment
+  POST   /api/projects/:id/deploy         Deploy (go live)
+  POST   /api/projects/:id/rollback       Roll back
+  GET    /api/projects/:id/deploy/status  Deploy status (SSE/WebSocket)
+
+Server
+  POST   /api/servers                     Connect server
+  GET    /api/servers/:id                 Server details
+  POST   /api/servers/:id/test            Test connection
+  POST   /api/servers/:id/setup           Run server setup
+  DELETE /api/servers/:id                 Disconnect server
+
+Secrets & logs
+  GET    /api/projects/:id/secrets        List secrets (values masked)
+  PUT    /api/projects/:id/secrets        Update secrets
+  GET    /api/projects/:id/logs           Stream server logs (SSE)
+  GET    /api/projects/:id/timeline       Unified history
+```
+
+## Data model
 
 ```sql
--- Nutzer
 users
   id            UUID PRIMARY KEY
   email         TEXT UNIQUE NOT NULL
   name          TEXT
   created_at    TIMESTAMPTZ
 
--- Projekte
 projects
   id            UUID PRIMARY KEY
   user_id       UUID REFERENCES users
   name          TEXT NOT NULL
   description   TEXT
-  runtime       TEXT  -- 'static' | 'nodejs'
-  repo_path     TEXT  -- Pfad zum Git-Repo auf dem Filesystem
+  runtime       TEXT            -- 'static' | 'nodejs'
+  repo_path     TEXT            -- path to Git repo on filesystem
   server_id     UUID REFERENCES servers (NULLABLE)
   is_public     BOOLEAN DEFAULT false
   archived_at   TIMESTAMPTZ
   created_at    TIMESTAMPTZ
   updated_at    TIMESTAMPTZ
 
--- Stände (Referenz auf Git-Commits)
 snapshots
   id            UUID PRIMARY KEY
   project_id    UUID REFERENCES projects
   commit_hash   TEXT NOT NULL
-  note          TEXT  -- optionale Nutzernotiz
+  note          TEXT            -- optional user note
   created_at    TIMESTAMPTZ
 
--- Veröffentlichungsstände (Referenz auf Git-Tags)
 releases
   id            UUID PRIMARY KEY
   project_id    UUID REFERENCES projects
   snapshot_id   UUID REFERENCES snapshots
-  tag_name      TEXT NOT NULL  -- 'v1', 'v2', 'Version mit neuem Design'
+  tag_name      TEXT NOT NULL   -- 'v1', 'v2', or user-defined
   created_at    TIMESTAMPTZ
 
--- Deployments
 deployments
   id            UUID PRIMARY KEY
   project_id    UUID REFERENCES projects
   release_id    UUID REFERENCES releases
   server_id     UUID REFERENCES servers
-  status        TEXT  -- 'pending' | 'transferring' | 'building' | 'starting' | 'checking' | 'live' | 'failed'
+  status        TEXT            -- pending | transferring | building | starting | checking | live | failed
   error_message TEXT
   started_at    TIMESTAMPTZ
   completed_at  TIMESTAMPTZ
 
--- Server
 servers
   id            UUID PRIMARY KEY
   user_id       UUID REFERENCES users
@@ -129,202 +145,133 @@ servers
   host          TEXT NOT NULL
   port          INTEGER DEFAULT 22
   username      TEXT DEFAULT 'solovibe'
-  ssh_key_id    UUID  -- Referenz auf verschlüsselten Key
-  os_info       JSONB  -- {distro, version, arch}
-  setup_status  TEXT  -- 'pending' | 'ready' | 'error'
-  target_dir    TEXT  -- z.B. '/opt/solovibe'
+  ssh_key_id    UUID
+  os_info       JSONB           -- {distro, version, arch}
+  setup_status  TEXT            -- pending | ready | error
+  target_dir    TEXT            -- e.g. '/opt/solovibe'
   created_at    TIMESTAMPTZ
 
--- Geheime Einstellungen
 secrets
   id            UUID PRIMARY KEY
   project_id    UUID REFERENCES projects
   key           TEXT NOT NULL
-  value_enc     BYTEA NOT NULL  -- verschlüsselt (AES-256-GCM)
+  value_enc     BYTEA NOT NULL  -- encrypted (AES-256-GCM)
   created_at    TIMESTAMPTZ
   updated_at    TIMESTAMPTZ
 
--- Ereignis-Log (vereinigter Verlauf)
 events
   id            UUID PRIMARY KEY
   project_id    UUID REFERENCES projects
-  type          TEXT  -- 'snapshot' | 'release' | 'deploy' | 'rollback' | 'error' | 'server_setup'
-  reference_id  UUID  -- ID des zugehörigen Objekts
+  type          TEXT            -- snapshot | release | deploy | rollback | error | server_setup
+  reference_id  UUID
   message       TEXT
   created_at    TIMESTAMPTZ
 ```
 
----
+## Versioning logic
 
-## Snapshot- und Versionierungslogik
+Every project is internally a Git repository. The user never sees this.
 
-### Prinzip
-Jedes Projekt ist intern ein Git-Repository. Der Nutzer weiß das nicht und muss es nicht wissen.
+**Save snapshot:** Files are written to the Git working directory, then `git add . && git commit`. The commit hash is stored in the `snapshots` table.
 
-### Ablauf: Stand speichern
-1. Nutzer lädt Dateien hoch (oder Solo-Vibe erkennt Änderungen)
-2. Dateien werden ins Working Directory des Git-Repos geschrieben
-3. `git add .` + `git commit -m "[Nutzernotiz oder Auto-Message]"`
-4. Commit-Hash wird in `snapshots`-Tabelle gespeichert
+**Mark release:** `git tag v[n] [commit-hash]`. The tag is stored in the `releases` table. Only tagged commits can be deployed.
 
-### Ablauf: Veröffentlichungsstand markieren
-1. Nutzer markiert einen Stand
-2. `git tag v[n] [commit-hash]`
-3. Tag wird in `releases`-Tabelle gespeichert
+**Restore snapshot:** `git checkout [commit-hash]`, then a new commit with the old state. No destructive reset — history stays intact.
 
-### Ablauf: Stand wiederherstellen
-1. `git checkout [commit-hash]` (detached HEAD)
-2. Neuer Commit mit dem Zustand des alten Stands
-3. Kein destructive Reset — die History bleibt intakt
+**Storage:** Repos live at `/data/repos/[user-id]/[project-id]/`. Daily backups. Long-term: migration to S3-compatible storage.
 
-### Speicher
-- Repos liegen unter `/data/repos/[user-id]/[project-id]/`
-- Backup: regelmäßiger Snapshot des gesamten `/data/repos/` Verzeichnisses
-- Langfristig: Migration zu Object Storage (S3-kompatibel) möglich
-
----
-
-## Deployment-Engine
-
-### Ablauf: Live schalten
+## Deployment engine
 
 ```
-1. Prüfungen
-   ├── Serververbindung aktiv?
-   ├── Veröffentlichungsstand vorhanden?
-   └── Secrets vollständig?
+1. Pre-checks
+   ├── Server connection active?
+   ├── Release exists?
+   └── Secrets complete?
 
-2. Code-Transfer
+2. Transfer
    ├── git archive [tag] → tar
-   ├── rsync über SSH zum Server
-   └── Dateien in /opt/solovibe/[projekt]/releases/[tag]/
+   ├── rsync via SSH to server
+   └── Files placed in /opt/solovibe/[project]/releases/[tag]/
 
-3. Build (je nach Runtime)
-   ├── Static: nichts zu tun
-   └── Node.js: npm ci --production (oder npm install)
+3. Build
+   ├── Static: nothing
+   └── Node.js: npm ci --production
 
-4. Aktivierung
-   ├── Symlink: /opt/solovibe/[projekt]/current → releases/[tag]/
-   ├── Static: Nginx-Config reload
+4. Activate
+   ├── Symlink: /opt/solovibe/[project]/current → releases/[tag]/
+   ├── Static: Nginx config reload
    └── Node.js: PM2 restart/start
 
-5. Secrets
-   └── .env-Datei wird aus verschlüsselten Secrets generiert und auf den Server geschrieben
+5. Inject secrets
+   └── .env file generated from encrypted secrets, written to server
 
-6. Funktionstest
-   ├── HTTP GET auf http://[server-ip]:[port]/
-   ├── Statuscode 2xx → Erfolg
-   └── Timeout oder Fehler → Rollback anbieten
+6. Health check
+   ├── HTTP GET to http://[server-ip]:[port]/
+   ├── 2xx within 30s → success
+   └── Timeout or error → offer rollback
 
-7. Status aktualisieren
-   └── Deployment-Status in DB → 'live' oder 'failed'
+7. Update status
+   └── Deployment record → 'live' or 'failed'
 ```
 
 ### Rollback
-1. Symlink auf vorherigen Release umstellen: `current → releases/[vorheriger-tag]/`
-2. PM2 restart oder Nginx reload
-3. Funktionstest
-4. Kein neuer Build nötig — der alte Release liegt noch auf dem Server
 
-### Verzeichnisstruktur auf dem Server
+1. Switch symlink to previous release: `current → releases/[previous-tag]/`
+2. PM2 restart or Nginx reload
+3. Health check
+4. No rebuild needed — previous release files are still on the server
+
+### Server directory structure
 
 ```
-/opt/solovibe/[projekt]/
+/opt/solovibe/[project]/
 ├── releases/
 │   ├── v1/
 │   ├── v2/
 │   └── v3/
-├── current → releases/v3  (Symlink)
+├── current → releases/v3  (symlink)
 ├── shared/
 │   └── .env
 └── logs/
 ```
 
----
+## Secrets handling
 
-## Secrets-Handling
-
-### Speicherung
-- Secrets werden AES-256-GCM verschlüsselt in der Datenbank gespeichert
-- Encryption Key liegt in einer Umgebungsvariable des Solo-Vibe-Servers (nicht in der DB)
-- Secrets werden nur beim Deploy entschlüsselt und als `.env`-Datei auf den Nutzer-Server geschrieben
-- Die `.env`-Datei liegt im `shared/`-Verzeichnis und wird per Symlink in den aktuellen Release eingebunden
-
-### Sichtbarkeit
-- In der UI werden Werte maskiert (nur die letzten 4 Zeichen sichtbar)
-- Secrets werden nie in Logs, Protokollen oder Fehlerausgaben angezeigt
-- Beim ZIP-Export werden Secrets NICHT mit exportiert (separate Warnung)
-
----
+- Encrypted with AES-256-GCM in the database
+- Encryption key stored as environment variable on Solo-Vibe server (not in DB)
+- Decrypted only during deploy, written as `.env` to user's server
+- Values masked in UI (last 4 characters visible)
+- Never included in logs or error messages
+- Not included in ZIP export (with warning)
 
 ## Logs
 
-### Server-Logs
-- Werden per SSH vom Nutzer-Server gestreamt (`ssh user@host 'pm2 logs --raw'` oder `journalctl -f`)
-- Werden live per SSE (Server-Sent Events) an das Frontend übertragen
-- Werden NICHT dauerhaft auf dem Solo-Vibe-Server gespeichert (Datenschutz)
-- Im Frontend gefiltert und mit Zeitstempeln versehen
+**Server logs:** Streamed via SSH (`pm2 logs --raw` or `journalctl -f`), delivered to frontend via SSE. Not permanently stored on Solo-Vibe server (privacy).
 
-### Deployment-Logs
-- Jeder Schritt des Deployments wird protokolliert
-- Bei Fehlern: der technische Fehler wird gespeichert + eine menschenlesbare Übersetzung
-- Deployment-Logs werden in der `deployments`-Tabelle gespeichert
+**Deployment logs:** Each step logged. Errors get both technical detail (stored) and human-readable translation (displayed).
 
-### Verlauf
-- Kombiniert: Stände + Veröffentlichungsstände + Deployments + Fehler
-- Dargestellt als chronologische Timeline
-- Jeder Eintrag hat einen Typ, Zeitstempel und eine kurze Beschreibung
+**History:** Unified timeline combining snapshots, releases, deployments, and errors.
 
----
+## Health checks (V1)
 
-## Funktionstest (Smoke Check)
+Simple HTTP check after deployment:
+- `GET http://[server-ip]:[port]/`
+- Expect 2xx within 30 seconds
+- On timeout: "Your app isn't responding. It may still be starting." + retry button
+- On 5xx: "Your app is reachable but reports a problem." + link to logs
 
-### V1: Einfacher HTTP-Check
-1. Nach dem Deployment: HTTP GET auf `http://[server-ip]:[port]/`
-2. Erwartung: HTTP 2xx innerhalb von 30 Sekunden
-3. Bei Timeout: "Deine App antwortet nicht. Möglicherweise startet sie noch." + Retry-Button
-4. Bei Fehler (5xx): "Deine App ist erreichbar, meldet aber ein Problem." + Protokoll-Link
+## Export and openness
 
-### Später (V2): Erweiterte Checks
-- Custom-URLs prüfen
-- Response-Body-Prüfung
-- Mehrere Endpunkte
+- **ZIP export:** `git archive HEAD` → ZIP. Contains all files of current snapshot. No Git history, no secrets. Available anytime.
+- **No lock-in:** Standard project structures. No Solo-Vibe config files in the project. PM2 and Nginx are standard tools. If Solo-Vibe disappears, the server keeps running.
+- **Git clone (V1.5):** Optional clone URL for users who know Git.
 
----
+## Solo-Vibe infrastructure (MVP)
 
-## Export / Offenheit
+- Single server (e.g. Hetzner CPX31: 4 vCPU, 8 GB RAM)
+- PostgreSQL on same server (or managed: Supabase, Neon)
+- Redis on same server
+- Nginx reverse proxy + Let's Encrypt SSL
+- Daily backups of DB and Git repos
 
-### ZIP-Export
-- `git archive HEAD` → ZIP-Datei
-- Enthält alle Dateien des aktuellen Stands
-- Enthält KEINE Git-History, KEINE Secrets
-- Kann jederzeit heruntergeladen werden
-
-### Git-Clone (V1.5)
-- Optional: Git-Clone-URL für Nutzer, die Git können
-- Vollständiges Repo mit History
-- Nur für den Nutzer selbst (nicht öffentlich in V1)
-
-### Kein Lock-in
-- Standard Node.js/HTML-Projekte
-- Keine Solo-Vibe-spezifischen Konfigurationsdateien im Projekt
-- Der Code auf dem Server ist normaler Code — PM2 und Nginx sind Standard-Tools
-- Wenn Solo-Vibe verschwindet, läuft der Server weiter
-
----
-
-## Infrastruktur (Solo-Vibe selbst)
-
-### MVP-Deployment
-- Ein einzelner Server (z.B. Hetzner CPX31: 4 vCPU, 8 GB RAM)
-- PostgreSQL auf dem gleichen Server (oder managed: Supabase, Neon)
-- Redis auf dem gleichen Server
-- Nginx als Reverse Proxy
-- Let's Encrypt für SSL
-- Tägliche Backups der DB und Git-Repos
-
-### Skalierung (später)
-- API-Server horizontal skalierbar (stateless)
-- Git-Repos auf Object Storage (S3) oder NFS
-- Deployment-Jobs über Message Queue verteilt
-- CDN für Frontend
+**Later:** Horizontal API scaling, Git repos on object storage, deployment jobs distributed via message queue, CDN for frontend.
