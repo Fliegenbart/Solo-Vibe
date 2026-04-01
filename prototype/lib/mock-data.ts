@@ -1,4 +1,13 @@
-import { Project, FileNode, TimelineEvent, ServerInfo } from "./types";
+import {
+  Project,
+  FileNode,
+  TimelineEvent,
+  ServerInfo,
+  UploadOption,
+  UploadStep,
+  UploadCheck,
+  DetectedProjectSummary,
+} from "./types";
 
 export const projects: Project[] = [
   {
@@ -156,4 +165,75 @@ export const serverInfo: ServerInfo = {
   os: "Ubuntu 24.04 LTS",
   status: "connected",
   lastChecked: "2 minutes ago",
+};
+
+export const uploadSteps: UploadStep[] = [
+  {
+    id: "choose",
+    label: "Choose your upload",
+    description: "Pick how your AI-generated code should come into Solo-Vibe.",
+  },
+  {
+    id: "inspect",
+    label: "Review what Solo-Vibe detects",
+    description: "We check the shape of the project before any server action happens.",
+  },
+  {
+    id: "finish",
+    label: "Create the workspace",
+    description: "Your first safe version is ready and the next step is obvious.",
+  },
+];
+
+export const uploadOptions: UploadOption[] = [
+  {
+    id: "zip",
+    name: "ZIP export",
+    description: "Best for Lovable, Bolt, v0, Claude, and ChatGPT downloads.",
+    helper: "Upload one archive and Solo-Vibe unpacks it into a safe first snapshot.",
+    recommendedFor: "Fastest way to start when an AI tool gave you a ZIP file.",
+    availability: "ready",
+  },
+  {
+    id: "folder",
+    name: "Project folder",
+    description: "Use the code folder already sitting on your laptop.",
+    helper: "Solo-Vibe keeps the structure as-is and prepares it for version history.",
+    recommendedFor: "Good when you already edited the app locally.",
+    availability: "ready",
+  },
+  {
+    id: "github",
+    name: "GitHub import",
+    description: "Pull from an existing repository instead of uploading files.",
+    helper: "Useful later, but not part of the first closed-beta workflow yet.",
+    recommendedFor: "Planned for a later version once the core upload flow is solid.",
+    availability: "soon",
+  },
+];
+
+export const uploadChecks: UploadCheck[] = [
+  {
+    id: "copy",
+    label: "Create a safe first snapshot",
+    detail: "Your code is stored before Solo-Vibe suggests any deployment action.",
+  },
+  {
+    id: "detect",
+    label: "Detect app type and runtime",
+    detail: "The prototype checks whether this looks like a static site or a Node.js app.",
+  },
+  {
+    id: "inspect",
+    label: "Inspect the likely start path",
+    detail: "We look for the files Solo-Vibe would need to build, preview, and deploy later.",
+  },
+];
+
+export const detectedProjectSummary: DetectedProjectSummary = {
+  runtime: "nodejs",
+  framework: "Next.js application",
+  entryPoint: "package.json with build/start scripts",
+  storagePlan: "First snapshot stored immediately as a recoverable version",
+  nextStep: "Connect your own server only after the code is safely stored",
 };

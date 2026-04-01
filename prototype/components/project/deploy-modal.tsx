@@ -29,29 +29,23 @@ export function DeployModal() {
   const [open, setOpen] = useState(false);
   const [deploying, setDeploying] = useState(false);
   const [currentStep, setCurrentStep] = useState(-1);
-  const [done, setDone] = useState(false);
+  const done = currentStep >= steps.length;
+  const isDeploying = deploying && !done;
 
   const startDeploy = useCallback(() => {
     setDeploying(true);
     setCurrentStep(0);
-    setDone(false);
   }, []);
 
   useEffect(() => {
-    if (!deploying || currentStep < 0) return;
-    if (currentStep >= steps.length) {
-      setDone(true);
-      setDeploying(false);
-      return;
-    }
+    if (!isDeploying || currentStep < 0) return;
     const timer = setTimeout(() => setCurrentStep((s) => s + 1), 1200 + Math.random() * 800);
     return () => clearTimeout(timer);
-  }, [deploying, currentStep]);
+  }, [isDeploying, currentStep]);
 
   const reset = () => {
     setDeploying(false);
     setCurrentStep(-1);
-    setDone(false);
   };
 
   return (
@@ -62,20 +56,18 @@ export function DeployModal() {
         if (!v) reset();
       }}
     >
-      <DialogTrigger asChild>
-        <Button className="bg-purple-600 hover:bg-purple-700 text-white gap-2">
-          <Rocket className="w-4 h-4" />
-          Go live
-        </Button>
+      <DialogTrigger
+        render={<Button className="gap-2 text-slate-950" />}
+      >
+        <Rocket className="w-4 h-4" />
+        Go live
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            {done ? "Your project is live" : deploying ? "Going live..." : "Go live"}
-          </DialogTitle>
+          <DialogTitle>{done ? "Your project is live" : isDeploying ? "Going live..." : "Go live"}</DialogTitle>
         </DialogHeader>
 
-        {!deploying && !done && (
+        {!isDeploying && !done && (
           <div className="space-y-4 pt-2">
             <p className="text-sm text-muted-foreground">
               This will deploy <strong className="text-foreground">v4</strong> to
@@ -83,7 +75,7 @@ export function DeployModal() {
             </p>
             <Button
               onClick={startDeploy}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white gap-2"
+              className="w-full gap-2 text-slate-950"
             >
               <Rocket className="w-4 h-4" />
               Deploy now
@@ -91,7 +83,7 @@ export function DeployModal() {
           </div>
         )}
 
-        {(deploying || done) && (
+        {(isDeploying || done) && (
           <div className="space-y-3 pt-2">
             {steps.map((step, i) => {
               const isActive = i === currentStep;
@@ -102,15 +94,15 @@ export function DeployModal() {
                   key={step.id}
                   className={cn(
                     "flex items-center gap-3 text-sm transition-all duration-300",
-                    isDone && "text-green-400",
+                    isDone && "text-cyan-100",
                     isActive && "text-foreground",
                     !isDone && !isActive && "text-muted-foreground/40"
                   )}
                 >
                   {isDone ? (
-                    <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-cyan-200 flex-shrink-0" />
                   ) : isActive ? (
-                    <Loader2 className="w-4 h-4 animate-spin text-purple-400 flex-shrink-0" />
+                    <Loader2 className="w-4 h-4 animate-spin text-cyan-200 flex-shrink-0" />
                   ) : (
                     <Circle className="w-4 h-4 flex-shrink-0" />
                   )}
@@ -120,14 +112,14 @@ export function DeployModal() {
             })}
 
             {done && (
-              <div className="mt-4 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                <div className="flex items-center gap-2 text-sm text-green-400 font-medium">
-                  <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <div className="mt-4 rounded-2xl border border-cyan-300/18 bg-cyan-400/[0.08] p-4">
+                <div className="flex items-center gap-2 text-sm font-medium text-cyan-100">
+                  <div className="h-2 w-2 rounded-full bg-cyan-200 animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.65)]" />
                   Live at 142.132.45.12:3000
                 </div>
                 <a
                   href="#"
-                  className="flex items-center gap-1 text-xs text-green-400/70 mt-1 hover:text-green-400"
+                  className="mt-2 flex items-center gap-1 text-xs text-cyan-100/70 hover:text-cyan-50"
                 >
                   Open in browser <ExternalLink className="w-3 h-3" />
                 </a>

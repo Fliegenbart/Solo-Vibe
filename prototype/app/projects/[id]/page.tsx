@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { projects, fileTree } from "@/lib/mock-data";
 import { FileBrowser } from "@/components/project/file-browser";
 import { StatusBar } from "@/components/project/status-bar";
 import { DeployModal } from "@/components/project/deploy-modal";
+import { ProjectSubnav } from "@/components/project/project-subnav";
 import { Button } from "@/components/ui/button";
-import { Save, Download, History, Server, Eye } from "lucide-react";
+import { Save, Download, Eye } from "lucide-react";
 import { notFound } from "next/navigation";
 
 export default async function ProjectPage({
@@ -17,36 +17,12 @@ export default async function ProjectPage({
   if (!project) return notFound();
 
   return (
-    <div className="max-w-4xl space-y-6">
-      {/* Status bar */}
+    <div className="max-w-5xl space-y-6">
       <StatusBar project={project} />
 
-      {/* Navigation tabs */}
-      <div className="flex items-center gap-1 border-b border-border">
-        <Link
-          href={`/projects/${id}`}
-          className="px-4 py-2.5 text-sm font-medium text-foreground border-b-2 border-purple-500"
-        >
-          Files
-        </Link>
-        <Link
-          href={`/projects/${id}/history`}
-          className="px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
-        >
-          <History className="w-3.5 h-3.5" />
-          History
-        </Link>
-        <Link
-          href={`/projects/${id}/server`}
-          className="px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
-        >
-          <Server className="w-3.5 h-3.5" />
-          Server
-        </Link>
-      </div>
+      <ProjectSubnav id={id} active="files" />
 
-      {/* Actions */}
-      <div className="flex items-center gap-2">
+      <div className="app-panel flex flex-wrap items-center gap-3 px-4 py-4">
         <Button variant="outline" size="sm" className="gap-1.5 text-xs">
           <Save className="w-3.5 h-3.5" />
           Save snapshot
@@ -64,7 +40,6 @@ export default async function ProjectPage({
         </div>
       </div>
 
-      {/* File browser */}
       <FileBrowser files={fileTree} />
     </div>
   );

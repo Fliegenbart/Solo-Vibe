@@ -1,5 +1,7 @@
 export type ProjectStatus = "live" | "draft" | "error";
 export type Runtime = "static" | "nodejs";
+export type UploadSource = "zip" | "folder" | "github";
+export type UploadAvailability = "ready" | "soon";
 
 export interface Project {
   id: string;
@@ -45,4 +47,33 @@ export interface ServerInfo {
   os: string;
   status: "connected" | "setup" | "disconnected";
   lastChecked: string;
+}
+
+export interface UploadOption {
+  id: UploadSource;
+  name: string;
+  description: string;
+  helper: string;
+  recommendedFor: string;
+  availability: UploadAvailability;
+}
+
+export interface UploadStep {
+  id: "choose" | "inspect" | "finish";
+  label: string;
+  description: string;
+}
+
+export interface UploadCheck {
+  id: string;
+  label: string;
+  detail: string;
+}
+
+export interface DetectedProjectSummary {
+  runtime: Runtime;
+  framework: string;
+  entryPoint: string;
+  storagePlan: string;
+  nextStep: string;
 }

@@ -24,44 +24,45 @@ const setupSteps = [
 export function SetupWizard({ server }: { server: ServerInfo | null }) {
   const [running, setRunning] = useState(false);
   const [currentStep, setCurrentStep] = useState(-1);
-  const [done, setDone] = useState(!!server);
+  const fallbackServer: ServerInfo = server ?? {
+    ip: "142.132.45.12",
+    os: "Ubuntu 24.04 LTS",
+    status: "connected",
+    lastChecked: "just now",
+  };
+  const done = !!server || currentStep >= setupSteps.length;
+  const isRunning = running && currentStep >= 0 && currentStep < setupSteps.length;
 
   const startSetup = useCallback(() => {
     setRunning(true);
     setCurrentStep(0);
-    setDone(false);
   }, []);
 
   useEffect(() => {
-    if (!running || currentStep < 0) return;
-    if (currentStep >= setupSteps.length) {
-      setDone(true);
-      setRunning(false);
-      return;
-    }
+    if (!isRunning || currentStep < 0) return;
     const timer = setTimeout(() => setCurrentStep((s) => s + 1), 1500 + Math.random() * 1000);
     return () => clearTimeout(timer);
-  }, [running, currentStep]);
+  }, [isRunning, currentStep]);
 
-  if (done && server) {
+  if (done) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center gap-2 text-green-400 text-sm font-medium">
-          <div className="w-2 h-2 rounded-full bg-green-400" />
+        <div className="telemetry-pill w-fit border-cyan-300/18 bg-cyan-400/[0.08] text-cyan-100">
+          <div className="h-2 w-2 rounded-full bg-cyan-200 shadow-[0_0_10px_rgba(34,211,238,0.65)]" />
           Server connected
         </div>
-        <div className="border border-border rounded-lg bg-card divide-y divide-border">
-          <div className="flex items-center justify-between px-4 py-3">
+        <div className="app-panel divide-y divide-white/8">
+          <div className="flex items-center justify-between px-4 py-3.5">
             <span className="text-sm text-muted-foreground">IP Address</span>
-            <span className="text-sm font-mono">{server.ip}</span>
+            <span className="text-sm font-mono">{fallbackServer.ip}</span>
           </div>
-          <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center justify-between px-4 py-3.5">
             <span className="text-sm text-muted-foreground">Operating System</span>
-            <span className="text-sm">{server.os}</span>
+            <span className="text-sm">{fallbackServer.os}</span>
           </div>
-          <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center justify-between px-4 py-3.5">
             <span className="text-sm text-muted-foreground">Last checked</span>
-            <span className="text-sm text-muted-foreground">{server.lastChecked}</span>
+            <span className="text-sm text-muted-foreground">{fallbackServer.lastChecked}</span>
           </div>
         </div>
         <div className="flex gap-2">
@@ -78,26 +79,28 @@ export function SetupWizard({ server }: { server: ServerInfo | null }) {
 
   return (
     <div className="space-y-6">
-      {!running && !done && (
+      {!isRunning && !done && (
         <div className="space-y-4">
-          <div className="border border-border rounded-lg bg-card p-4 space-y-3">
+          <div className="app-panel space-y-4 p-5">
             <label className="block">
-              <span className="text-sm text-muted-foreground">Server IP address</span>
+              <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                Server IP address
+              </span>
               <input
                 type="text"
                 placeholder="e.g. 142.132.45.12"
                 defaultValue="142.132.45.12"
-                className="mt-1.5 w-full px-3 py-2 bg-background border border-border rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-purple-500/40 focus:border-purple-500/40"
+                className="mt-2 w-full rounded-xl border border-white/10 bg-background/70 px-3 py-3 text-sm font-mono focus:border-cyan-300/28 focus:outline-none focus:ring-2 focus:ring-cyan-300/18"
               />
             </label>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm leading-6 text-muted-foreground">
               Solo-Vibe will connect via SSH, check your server, and install
               everything needed to deploy your projects.
             </p>
           </div>
           <Button
             onClick={startSetup}
-            className="bg-purple-600 hover:bg-purple-700 text-white gap-2"
+            className="gap-2 text-slate-950"
           >
             <Server className="w-4 h-4" />
             Connect server
@@ -105,7 +108,7 @@ export function SetupWizard({ server }: { server: ServerInfo | null }) {
         </div>
       )}
 
-      {running && (
+      {isRunning && (
         <div className="space-y-3">
           {setupSteps.map((step, i) => {
             const isActive = i === currentStep;
@@ -116,16 +119,16 @@ export function SetupWizard({ server }: { server: ServerInfo | null }) {
               <div
                 key={step.id}
                 className={cn(
-                  "flex items-center gap-3 text-sm p-3 rounded-lg transition-all duration-300",
-                  isDone && "text-green-400 bg-green-500/5",
-                  isActive && "text-foreground bg-purple-500/5",
+                  "flex items-center gap-3 rounded-2xl border p-4 text-sm transition-all duration-300",
+                  isDone && "border-cyan-300/18 bg-cyan-400/[0.06] text-cyan-50",
+                  isActive && "border-cyan-300/24 bg-cyan-400/[0.08] text-foreground shadow-[0_0_24px_rgba(34,211,238,0.1)]",
                   !isDone && !isActive && "text-muted-foreground/40"
                 )}
               >
                 {isDone ? (
-                  <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                  <Check className="w-4 h-4 text-cyan-200 flex-shrink-0" />
                 ) : isActive ? (
-                  <Loader2 className="w-4 h-4 animate-spin text-purple-400 flex-shrink-0" />
+                  <Loader2 className="w-4 h-4 animate-spin text-cyan-200 flex-shrink-0" />
                 ) : (
                   <Circle className="w-4 h-4 flex-shrink-0" />
                 )}
