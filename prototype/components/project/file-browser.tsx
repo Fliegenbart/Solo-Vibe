@@ -13,7 +13,7 @@ function FileTreeItem({ node, depth = 0 }: { node: FileNode; depth?: number }) {
       <button
         onClick={() => node.type === "folder" && setOpen(!open)}
         className={cn(
-          "w-full flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-accent/50 rounded transition-colors",
+          "flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-white/[0.04]",
           node.type === "folder" && "cursor-pointer"
         )}
         style={{ paddingLeft: `${depth * 16 + 12}px` }}
@@ -22,11 +22,11 @@ function FileTreeItem({ node, depth = 0 }: { node: FileNode; depth?: number }) {
           <>
             <ChevronRight
               className={cn(
-                "w-3.5 h-3.5 text-muted-foreground transition-transform",
+                "h-3.5 w-3.5 text-muted-foreground transition-transform",
                 open && "rotate-90"
               )}
             />
-            <Folder className="w-4 h-4 text-purple-400" />
+            <Folder className="h-4 w-4 text-cyan-200" />
           </>
         ) : (
           <>
@@ -34,7 +34,7 @@ function FileTreeItem({ node, depth = 0 }: { node: FileNode; depth?: number }) {
             <File className="w-4 h-4 text-muted-foreground" />
           </>
         )}
-        <span className={cn(node.type === "folder" && "font-medium")}>
+        <span className={cn(node.type === "folder" && "font-medium text-foreground")}>
           {node.name}
         </span>
         {node.size && (
@@ -52,13 +52,13 @@ function FileTreeItem({ node, depth = 0 }: { node: FileNode; depth?: number }) {
 
 export function FileBrowser({ files }: { files: FileNode[] }) {
   return (
-    <div className="border border-border rounded-lg bg-card overflow-hidden">
-      <div className="px-4 py-2.5 border-b border-border bg-muted/30">
-        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+    <div className="overflow-hidden rounded-[1.35rem] border border-white/8 bg-white/[0.015]">
+      <div className="border-b border-white/8 px-4 py-3">
+        <span className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
           Files
         </span>
       </div>
-      <div className="py-1">
+      <div className="py-2">
         {files.map((node) => (
           <FileTreeItem key={node.name} node={node} />
         ))}
