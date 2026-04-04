@@ -30,7 +30,7 @@ const colorMap = {
 
 export function Timeline({ events }: { events: TimelineEvent[] }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {events.map((event, i) => {
         const Icon = iconMap[event.type];
         const color = colorMap[event.type];
@@ -51,7 +51,7 @@ export function Timeline({ events }: { events: TimelineEvent[] }) {
               )}
             </div>
 
-            <div className="app-panel flex-1 min-w-0 px-4 py-4">
+            <div className="app-panel min-w-0 flex-1 px-4 py-4">
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="text-sm font-medium text-white">{event.title}</p>
@@ -78,17 +78,38 @@ export function Timeline({ events }: { events: TimelineEvent[] }) {
               <p className="mt-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground/55">
                 {event.relativeTime}
               </p>
-              {(event.type === "release" || event.type === "snapshot") && (
-                <div className="mt-4 flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+
+              {event.trustLabel && (
+                <div
+                  className={cn(
+                    "mt-4 rounded-2xl border px-4 py-3",
+                    event.safeToRestore
+                      ? "border-cyan-300/16 bg-cyan-400/[0.06]"
+                      : event.success === false
+                        ? "border-rose-300/14 bg-rose-400/[0.07]"
+                        : "border-white/8 bg-white/[0.025]"
+                  )}
+                >
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">
+                    {event.trustLabel}
+                  </p>
+                  {event.trustDetail && (
+                    <p className="mt-2 text-sm leading-6 text-zinc-200">{event.trustDetail}</p>
+                  )}
+                </div>
+              )}
+
+              {(event.type === "release" || event.type === "snapshot" || event.safeToRestore) && (
+                <div className="mt-4 flex flex-wrap gap-2">
                   {event.type === "release" && (
                     <Button variant="outline" size="sm" className="h-8 gap-1 text-[11px]">
                       <Rocket className="w-3 h-3" />
-                      Go live with this
+                      Make this live
                     </Button>
                   )}
                   <Button variant="ghost" size="sm" className="h-8 gap-1 text-[11px]">
                     <RotateCcw className="w-3 h-3" />
-                    Restore
+                    Restore this version
                   </Button>
                 </div>
               )}

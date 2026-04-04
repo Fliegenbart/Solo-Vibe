@@ -2,6 +2,30 @@ export type ProjectStatus = "live" | "draft" | "error";
 export type Runtime = "static" | "nodejs";
 export type UploadSource = "zip" | "folder" | "github";
 export type UploadAvailability = "ready" | "soon";
+export type VisibleProjectState =
+  | "imported_safely"
+  | "project_understood"
+  | "server_ready"
+  | "ready_to_go_live"
+  | "live_and_healthy"
+  | "attention_needed"
+  | "safe_rollback_available";
+
+export interface StatusCopy {
+  label: string;
+  detail: string;
+}
+
+export interface UnderstandingCopy {
+  summary: string;
+  likelyNeed: string;
+}
+
+export interface AttentionCopy {
+  happened: string;
+  meaning: string;
+  nextSafeStep: string;
+}
 
 export interface Project {
   id: string;
@@ -13,7 +37,13 @@ export interface Project {
   serverIp?: string;
   lastSnapshot?: string; // relative time
   liveRelease?: string;
+  lastStableRelease?: string;
   createdAt: string;
+  visibleState: VisibleProjectState;
+  stateCopy: StatusCopy;
+  nextSafeAction: StatusCopy & { href: string };
+  understanding: UnderstandingCopy;
+  attention?: AttentionCopy;
 }
 
 export interface FileNode {
@@ -34,6 +64,9 @@ export interface TimelineEvent {
   relativeTime: string;
   releaseTag?: string;
   success?: boolean;
+  trustLabel?: string;
+  trustDetail?: string;
+  safeToRestore?: boolean;
 }
 
 export interface DeployStep {
@@ -47,6 +80,11 @@ export interface ServerInfo {
   os: string;
   status: "connected" | "setup" | "disconnected";
   lastChecked: string;
+  guidedHelp: string;
+  nextSafeStep: string;
+  requirements: string[];
+  checks: string[];
+  installs: string[];
 }
 
 export interface UploadOption {
@@ -75,5 +113,8 @@ export interface DetectedProjectSummary {
   framework: string;
   entryPoint: string;
   storagePlan: string;
+  plainLanguageSummary: string;
+  likelyNeed: string;
+  safeStatus: string;
   nextStep: string;
 }

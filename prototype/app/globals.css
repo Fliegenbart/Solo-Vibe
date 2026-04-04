@@ -164,6 +164,42 @@
     @apply inline-flex items-center gap-2 rounded-full border border-white/8 bg-white/[0.03] px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground;
   }
 
+  .metric-shell {
+    @apply relative overflow-hidden rounded-[1.25rem] border border-white/8 bg-white/[0.025] px-4 py-4;
+  }
+
+  .metric-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(34, 211, 238, 0.06), transparent 42%, rgba(129, 140, 248, 0.05));
+    pointer-events: none;
+  }
+
+  .eyebrow-label {
+    @apply text-[11px] font-medium uppercase tracking-[0.22em] text-muted-foreground/75;
+  }
+
+  .focus-surface {
+    @apply relative overflow-hidden rounded-[1.35rem] border border-white/8 bg-white/[0.025] px-4 py-4;
+  }
+
+  .focus-surface::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(34, 211, 238, 0.06), transparent 40%, rgba(129, 140, 248, 0.04));
+    pointer-events: none;
+  }
+
+  .support-list {
+    @apply space-y-3 text-sm text-zinc-200;
+  }
+
+  .support-list li {
+    @apply flex gap-3;
+  }
+
   .subnav-shell {
     @apply relative flex items-center gap-2 overflow-hidden rounded-[1.25rem] border border-white/8 bg-card/85 px-2 py-2 shadow-[0_18px_60px_rgba(2,8,23,0.45)] backdrop-blur-xl;
   }

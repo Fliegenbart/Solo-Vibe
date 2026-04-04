@@ -77,9 +77,30 @@ export function UploadFlow() {
           Bring your AI-built app here before it gets lost in a chat thread.
         </h2>
         <p className="mt-4 max-w-md text-sm leading-7 text-zinc-300">
-          Solo-Vibe stores the code first, detects what kind of project it is, and
-          only then guides you toward preview and deployment.
+          Start with the code you already have. Solo-Vibe stores it safely,
+          checks what it is, and only then suggests the next step.
         </p>
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-3">
+          <div className="metric-shell">
+            <div className="relative">
+              <p className="eyebrow-label">Store</p>
+              <p className="mt-2 text-sm font-medium text-white">First snapshot created</p>
+            </div>
+          </div>
+          <div className="metric-shell">
+            <div className="relative">
+              <p className="eyebrow-label">Inspect</p>
+              <p className="mt-2 text-sm font-medium text-white">Runtime and structure detected</p>
+            </div>
+          </div>
+          <div className="metric-shell">
+            <div className="relative">
+              <p className="eyebrow-label">Guide</p>
+              <p className="mt-2 text-sm font-medium text-white">Next action stays clear</p>
+            </div>
+          </div>
+        </div>
 
         <div className="mt-8 space-y-4">
           {uploadSteps.map((step, index) => {
@@ -119,7 +140,7 @@ export function UploadFlow() {
 
         <div className="mt-8 rounded-2xl border border-white/10 bg-black/20 p-4">
           <p className="text-xs font-medium uppercase tracking-[0.16em] text-zinc-400">
-            What this demo proves
+            Builder protection
           </p>
           <ul className="mt-3 space-y-3 text-sm text-zinc-200">
             <li className="flex gap-3">
@@ -149,6 +170,10 @@ export function UploadFlow() {
                 <h3 className="mt-2 text-2xl font-semibold tracking-tight">
                   Start a new project from the code you already have
                 </h3>
+                <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
+                  Name it once, choose the import path, then preview what Solo-Vibe
+                  will check before anything gets deployed.
+                </p>
               </div>
               <Badge
                 variant="outline"
@@ -158,52 +183,65 @@ export function UploadFlow() {
               </Badge>
             </div>
 
-            <div className="mt-6 grid gap-5">
-              <label className="block">
-                <span className="text-sm font-medium text-foreground">Project name</span>
-                <input
-                  value={projectName}
-                  onChange={(event) => setProjectName(event.target.value)}
-                  className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition focus:border-purple-400/50 focus:ring-2 focus:ring-purple-500/20"
-                  placeholder="My AI-built app"
-                />
-              </label>
+            <div className="mt-6 grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
+              <div className="grid gap-5">
+                <label className="block">
+                  <span className="text-sm font-medium text-foreground">Project name</span>
+                  <input
+                    value={projectName}
+                    onChange={(event) => setProjectName(event.target.value)}
+                    className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition focus:border-cyan-300/45 focus:ring-2 focus:ring-cyan-300/15"
+                    placeholder="My AI-built app"
+                  />
+                </label>
 
-              <div>
-                <p className="text-sm font-medium text-foreground">Upload source</p>
-                <div className="mt-3 grid gap-3">
-                  {uploadOptions.map((option) => (
-                    <UploadOptionCard
-                      key={option.id}
-                      option={option}
-                      selected={option.id === selectedSource}
-                      onSelect={setSelectedSource}
-                    />
-                  ))}
+                <div>
+                  <p className="text-sm font-medium text-foreground">Upload source</p>
+                  <div className="mt-3 grid gap-3">
+                    {uploadOptions.map((option) => (
+                      <UploadOptionCard
+                        key={option.id}
+                        option={option}
+                        selected={option.id === selectedSource}
+                        onSelect={setSelectedSource}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-dashed border-cyan-300/20 bg-cyan-400/[0.05] p-4">
+              <div className="rounded-[1.5rem] border border-dashed border-cyan-300/20 bg-cyan-400/[0.05] p-4">
                 <div className="flex items-start gap-3">
                   {selectedSource === "zip" ? (
                     <PackageOpen className="mt-0.5 h-5 w-5 text-cyan-200" />
                   ) : (
                     <FolderOpen className="mt-0.5 h-5 w-5 text-cyan-200" />
                   )}
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Prototype upload preview</p>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-foreground">Import preview</p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Selected source: <span className="text-foreground">{selectedOption.name}</span>
+                      Source path: <span className="text-foreground">{selectedOption.name}</span>
                     </p>
                     {selectedSource !== "github" && (
-                      <p className="mt-2 rounded-xl bg-background/80 px-3 py-2 font-mono text-xs text-foreground/80">
+                      <p className="mt-3 rounded-xl bg-background/80 px-3 py-2 font-mono text-xs text-foreground/80">
                         {sampleUploads[selectedSource]}
                       </p>
                     )}
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      In this clickable prototype we simulate the upload, but the next
-                      screen shows exactly what Solo-Vibe would check before deployment.
-                    </p>
+                    <div className="mt-4 space-y-3 rounded-2xl border border-white/8 bg-black/20 p-4">
+                      <div>
+                        <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">
+                          What happens on review
+                        </p>
+                        <p className="mt-2 text-sm leading-6 text-zinc-200">
+                          Solo-Vibe checks project type, likely entry point, and the
+                          safest next action.
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-cyan-100/80">
+                        <ShieldCheck className="h-3.5 w-3.5 text-emerald-300" />
+                        Preview only, no deployment yet
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -241,6 +279,15 @@ export function UploadFlow() {
               explanation second, deployment later.
             </p>
 
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span className="telemetry-pill border-cyan-300/16 bg-cyan-400/[0.08] text-cyan-100">
+                Imported safely
+              </span>
+              <span className="telemetry-pill border-cyan-300/16 bg-cyan-400/[0.08] text-cyan-100">
+                Project understood
+              </span>
+            </div>
+
             <div className="mt-6 space-y-3">
               {uploadChecks.map((check, index) => {
                 const active = index === scanIndex && !inspectDone;
@@ -277,25 +324,30 @@ export function UploadFlow() {
             </div>
 
             <div className="mt-6 rounded-[1.6rem] border border-white/8 bg-background/70 p-5">
-              <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                Detected project summary
-              </p>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                  Detected project summary
+                </p>
+                <span className="telemetry-pill border-cyan-300/16 bg-cyan-400/[0.08] text-cyan-100">
+                  Safe to create workspace
+                </span>
+              </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl border border-border bg-card p-4">
+                <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-4">
                   <p className="text-xs text-muted-foreground">Project</p>
                   <p className="mt-1 text-sm font-medium text-foreground">{projectName}</p>
                 </div>
-                <div className="rounded-2xl border border-border bg-card p-4">
+                <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-4">
                   <p className="text-xs text-muted-foreground">Source</p>
                   <p className="mt-1 text-sm font-medium text-foreground">{selectedOption.name}</p>
                 </div>
-                <div className="rounded-2xl border border-border bg-card p-4">
+                <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-4">
                   <p className="text-xs text-muted-foreground">Runtime</p>
                   <p className="mt-1 text-sm font-medium text-foreground">
                     {detectedProjectSummary.runtime === "nodejs" ? "Node.js" : "Static"}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-border bg-card p-4">
+                <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-4">
                   <p className="text-xs text-muted-foreground">Framework</p>
                   <p className="mt-1 text-sm font-medium text-foreground">
                     {detectedProjectSummary.framework}
@@ -304,6 +356,17 @@ export function UploadFlow() {
               </div>
 
               <div className="mt-4 rounded-2xl border border-cyan-300/20 bg-cyan-400/[0.05] p-4 text-sm text-muted-foreground">
+                <p className="text-sm leading-6 text-zinc-100">
+                  {detectedProjectSummary.plainLanguageSummary}
+                </p>
+                <p className="mt-3">
+                  <span className="font-medium text-foreground">Safe status:</span>{" "}
+                  {detectedProjectSummary.safeStatus}
+                </p>
+                <p className="mt-2">
+                  <span className="font-medium text-foreground">It likely needs:</span>{" "}
+                  {detectedProjectSummary.likelyNeed}
+                </p>
                 <p>
                   <span className="font-medium text-foreground">Likely entry point:</span>{" "}
                   {detectedProjectSummary.entryPoint}
@@ -355,9 +418,21 @@ export function UploadFlow() {
               is, and the next action is obvious instead of overwhelming.
             </p>
 
-            <div className="mt-6 grid gap-3">
-              <div className="rounded-2xl border border-border bg-background p-4">
-                <p className="text-sm font-medium text-foreground">What happens next</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span className="telemetry-pill border-cyan-300/16 bg-cyan-400/[0.08] text-cyan-100">
+                Imported safely
+              </span>
+              <span className="telemetry-pill border-cyan-300/16 bg-cyan-400/[0.08] text-cyan-100">
+                First snapshot created
+              </span>
+              <span className="telemetry-pill border-cyan-300/16 bg-cyan-400/[0.08] text-cyan-100">
+                Ready for server setup
+              </span>
+            </div>
+
+            <div className="mt-6 grid gap-3 lg:grid-cols-[1.15fr_0.85fr]">
+              <div className="rounded-2xl border border-white/8 bg-background p-4">
+                <p className="text-sm font-medium text-foreground">What Solo-Vibe guaranteed</p>
                 <ul className="mt-3 space-y-3 text-sm text-muted-foreground">
                   <li className="flex gap-3">
                     <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-300" />
@@ -372,6 +447,20 @@ export function UploadFlow() {
                     You never needed Git commands to reach this point.
                   </li>
                 </ul>
+              </div>
+              <div className="rounded-2xl border border-cyan-300/20 bg-cyan-400/[0.06] p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-cyan-100/80">
+                  Next safe step
+                </p>
+                <p className="mt-3 text-sm leading-6 text-zinc-100">
+                  Open the dashboard, connect one server, then preview before you go live.
+                </p>
+                <p className="mt-4 text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                  Why this matters
+                </p>
+                <p className="mt-2 text-sm text-zinc-200">
+                  You already have a safe baseline. From here on, every risky step can be explained against that saved version.
+                </p>
               </div>
             </div>
 

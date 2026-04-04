@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Plus, Zap } from "lucide-react";
+import { ChevronRight, LayoutDashboard, Plus, Zap } from "lucide-react";
 import { projects } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +25,9 @@ export function Sidebar() {
             </span>
           </div>
         </Link>
+        <p className="mt-4 text-[11px] uppercase tracking-[0.2em] text-muted-foreground/60">
+          Operational space for imported AI projects
+        </p>
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-4">
@@ -51,7 +54,7 @@ export function Sidebar() {
             key={p.id}
             href={`/projects/${p.id}`}
             className={cn(
-              "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-200",
+              "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-200",
               pathname.startsWith(`/projects/${p.id}`)
                 ? "bg-white/[0.05] text-foreground shadow-[inset_0_0_0_1px_rgba(129,140,248,0.12)]"
                 : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
@@ -71,14 +74,30 @@ export function Sidebar() {
             <div className="min-w-0">
               <span className="block truncate font-medium">{p.name}</span>
               <span className="block truncate text-[11px] uppercase tracking-[0.16em] text-muted-foreground/55">
-                {p.runtime === "nodejs" ? "Node app" : "Static site"}
+                {p.stateCopy.label}
               </span>
             </div>
+            <ChevronRight
+              className={cn(
+                "ml-auto h-4 w-4 flex-shrink-0 transition-all",
+                pathname.startsWith(`/projects/${p.id}`)
+                  ? "text-cyan-200"
+                  : "text-muted-foreground/35 group-hover:text-muted-foreground/65"
+              )}
+            />
           </Link>
         ))}
       </nav>
 
       <div className="border-t border-white/8 p-3">
+        <div className="mb-3 rounded-xl border border-white/8 bg-white/[0.025] px-3 py-2">
+          <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground/65">
+            Recommended path
+          </p>
+          <p className="mt-1 text-sm text-zinc-200">
+            Import first. Verify structure. Deploy later.
+          </p>
+        </div>
         <Link
           href="/new"
           className={cn(
