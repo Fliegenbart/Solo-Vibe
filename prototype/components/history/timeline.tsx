@@ -30,7 +30,7 @@ const colorMap = {
 
 export function Timeline({ events }: { events: TimelineEvent[] }) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {events.map((event, i) => {
         const Icon = iconMap[event.type];
         const color = colorMap[event.type];
@@ -40,7 +40,7 @@ export function Timeline({ events }: { events: TimelineEvent[] }) {
             <div className="flex flex-col items-center">
               <div
                 className={cn(
-                  "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border shadow-[0_0_18px_rgba(2,8,23,0.24)]",
+                  "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border",
                   color
                 )}
               >
@@ -51,12 +51,12 @@ export function Timeline({ events }: { events: TimelineEvent[] }) {
               )}
             </div>
 
-            <div className="app-panel min-w-0 flex-1 px-4 py-4">
+            <div className="min-w-0 flex-1 border-b border-white/8 pb-4">
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="text-sm font-medium text-white">{event.title}</p>
                   {event.description && (
-                    <p className="mt-1 text-sm text-muted-foreground">
+                    <p className="mt-1 text-sm leading-6 text-muted-foreground">
                       {event.description}
                     </p>
                   )}
@@ -82,12 +82,12 @@ export function Timeline({ events }: { events: TimelineEvent[] }) {
               {event.trustLabel && (
                 <div
                   className={cn(
-                    "mt-4 rounded-2xl border px-4 py-3",
+                    "mt-4 border-l px-4 py-1",
                     event.safeToRestore
-                      ? "border-cyan-300/16 bg-cyan-400/[0.06]"
+                      ? "border-cyan-300/30"
                       : event.success === false
-                        ? "border-rose-300/14 bg-rose-400/[0.07]"
-                        : "border-white/8 bg-white/[0.025]"
+                        ? "border-rose-300/25"
+                        : "border-white/10"
                   )}
                 >
                   <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">

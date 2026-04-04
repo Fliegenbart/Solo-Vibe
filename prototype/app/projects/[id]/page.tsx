@@ -25,48 +25,37 @@ export default async function ProjectPage({
 
       <ProjectSubnav id={id} active="files" />
 
-      <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-        <div className="app-panel px-5 py-5">
-          <p className="eyebrow-label">Project understanding</p>
-          <h3 className="display-title mt-2 text-2xl font-semibold text-white">
-            Here is what Solo-Vibe understands about this project
-          </h3>
-          <p className="mt-3 text-sm leading-6 text-zinc-200">
-            {project.understanding.summary}
-          </p>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            It likely needs: {project.understanding.likelyNeed}
-          </p>
-
-          <div className="mt-5 flex flex-wrap gap-2">
-            <span className="telemetry-pill border-cyan-300/16 bg-cyan-400/[0.08] text-cyan-100">
-              Snapshot available
-            </span>
-            {project.serverIp ? (
-              <span className="telemetry-pill border-cyan-300/16 bg-cyan-400/[0.08] text-cyan-100">
-                Server connected
-              </span>
-            ) : (
-              <span className="telemetry-pill">Server not connected yet</span>
-            )}
-            {project.lastStableRelease && (
-              <span className="telemetry-pill border-cyan-300/16 bg-cyan-400/[0.08] text-cyan-100">
-                Safe rollback available
-              </span>
-            )}
+      <section className="app-panel px-5 py-5 lg:px-6">
+        <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+          <div>
+            <p className="eyebrow-label">Project understanding</p>
+            <h3 className="display-title mt-2 text-2xl font-semibold text-white">
+              Solo-Vibe already knows what this project needs next
+            </h3>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-200">
+              {project.understanding.summary}
+            </p>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              It likely needs: {project.understanding.likelyNeed}
+            </p>
           </div>
-        </div>
 
-        <div className="app-panel px-5 py-5">
-          <p className="eyebrow-label">Recommended action</p>
-          <h3 className="display-title mt-2 text-2xl font-semibold text-white">
-            {project.nextSafeAction.label}
-          </h3>
-          <p className="mt-3 text-sm leading-6 text-zinc-300">
-            {project.nextSafeAction.detail}
-          </p>
+          <div className="border-t border-white/8 pt-4 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+            <p className="eyebrow-label">Next safe action</p>
+            <h3 className="mt-2 text-lg font-semibold text-white">
+              {project.nextSafeAction.label}
+            </h3>
+            <p className="mt-2 text-sm leading-6 text-zinc-300">
+              {project.nextSafeAction.detail}
+            </p>
 
-          <div className="mt-5 flex flex-col gap-3">
+            <div className="mt-4 flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">
+              <span>Snapshot available</span>
+              <span>{project.serverIp ? "Server connected" : "Server not connected yet"}</span>
+              {project.lastStableRelease && <span>Safe rollback available</span>}
+            </div>
+
+            <div className="mt-4 flex flex-col gap-3">
             {primaryActionIsExternal ? (
               <a
                 href={primaryActionHref}
@@ -86,22 +75,12 @@ export default async function ProjectPage({
                 <ArrowRight className="w-4 h-4" />
               </Link>
             )}
-
-            <div className="grid gap-2 sm:grid-cols-2">
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-                <Save className="w-3.5 h-3.5" />
-                Save snapshot
-              </Button>
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-                <Download className="w-3.5 h-3.5" />
-                Download ZIP
-              </Button>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="app-panel flex flex-wrap items-center gap-3 px-4 py-4">
+      <section className="flex flex-wrap items-center gap-3 border-b border-white/8 px-1 pb-4">
         <Button variant="outline" size="sm" className="gap-1.5 text-xs">
           <Eye className="w-3.5 h-3.5" />
           Preview current version
@@ -122,7 +101,7 @@ export default async function ProjectPage({
         <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/60">
           One clear live path, with rollback available
         </span>
-      </div>
+      </section>
 
       <FileBrowser files={fileTree} />
     </div>

@@ -90,14 +90,12 @@ export function SetupWizard({ server }: { server: ServerInfo | null }) {
           <div className="h-2 w-2 rounded-full bg-cyan-200 shadow-[0_0_10px_rgba(34,211,238,0.65)]" />
           Server ready
         </div>
-        <div className="focus-surface">
-          <div className="relative">
-            <p className="eyebrow-label text-cyan-100/75">What Solo-Vibe confirmed</p>
-            <p className="mt-2 text-sm leading-6 text-zinc-200">{fallbackServer.guidedHelp}</p>
-            <p className="mt-3 text-sm font-medium text-white">{fallbackServer.nextSafeStep}</p>
-          </div>
+        <div className="border-b border-white/8 pb-4">
+          <p className="eyebrow-label text-cyan-100/75">What Solo-Vibe confirmed</p>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-200">{fallbackServer.guidedHelp}</p>
+          <p className="mt-3 text-sm font-medium text-white">{fallbackServer.nextSafeStep}</p>
         </div>
-        <div className="app-panel divide-y divide-white/8">
+        <div className="divide-y divide-white/8 rounded-[1.1rem] border border-white/8 bg-white/[0.02]">
           <div className="flex items-center justify-between px-4 py-3.5">
             <span className="text-sm text-muted-foreground">IP Address</span>
             <span className="text-sm font-mono">{fallbackServer.ip}</span>
@@ -111,8 +109,8 @@ export function SetupWizard({ server }: { server: ServerInfo | null }) {
             <span className="text-sm text-muted-foreground">{fallbackServer.lastChecked}</span>
           </div>
         </div>
-        <div className="grid gap-3 md:grid-cols-2">
-          <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-4">
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="border-t border-white/8 pt-4">
             <p className="eyebrow-label">What was checked</p>
             <ul className="mt-3 support-list">
               {fallbackServer.checks.map((check) => (
@@ -123,7 +121,7 @@ export function SetupWizard({ server }: { server: ServerInfo | null }) {
               ))}
             </ul>
           </div>
-          <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-4">
+          <div className="border-t border-white/8 pt-4">
             <p className="eyebrow-label">What was prepared</p>
             <ul className="mt-3 support-list">
               {fallbackServer.installs.map((item) => (
@@ -154,19 +152,17 @@ export function SetupWizard({ server }: { server: ServerInfo | null }) {
     <div className="space-y-6">
       {!isRunning && !done && (
         <div className="space-y-4">
-          <div className="app-panel space-y-4 p-5">
-            <div className="focus-surface">
-              <div className="relative">
-                <p className="eyebrow-label text-cyan-100/75">What you need</p>
-                <ul className="mt-3 support-list">
-                  {fallbackServer.requirements.map((item) => (
-                    <li key={item}>
-                      <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-300" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          <div className="space-y-4">
+            <div>
+              <p className="eyebrow-label text-cyan-100/75">What you need</p>
+              <ul className="mt-3 support-list">
+                {fallbackServer.requirements.map((item) => (
+                  <li key={item}>
+                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-300" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </div>
 
             <label className="block">
@@ -184,8 +180,8 @@ export function SetupWizard({ server }: { server: ServerInfo | null }) {
               Solo-Vibe will connect via SSH, check your server, and only prepare
               the deploy path your project actually needs.
             </p>
-            <div className="grid gap-3 md:grid-cols-2">
-              <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="border-t border-white/8 pt-4">
                 <p className="eyebrow-label">What Solo-Vibe checks</p>
                 <ul className="mt-3 support-list">
                   {fallbackServer.checks.map((check) => (
@@ -196,7 +192,7 @@ export function SetupWizard({ server }: { server: ServerInfo | null }) {
                   ))}
                 </ul>
               </div>
-              <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-4">
+              <div className="border-t border-white/8 pt-4">
                 <p className="eyebrow-label">What gets set up</p>
                 <ul className="mt-3 support-list">
                   {fallbackServer.installs.map((item) => (
@@ -230,10 +226,10 @@ export function SetupWizard({ server }: { server: ServerInfo | null }) {
               <div
                 key={step.id}
                 className={cn(
-                  "flex items-center gap-3 rounded-2xl border p-4 text-sm transition-all duration-300",
-                  isDone && "border-cyan-300/18 bg-cyan-400/[0.06] text-cyan-50",
-                  isActive && "border-cyan-300/24 bg-cyan-400/[0.08] text-foreground shadow-[0_0_24px_rgba(34,211,238,0.1)]",
-                  !isDone && !isActive && "text-muted-foreground/40"
+                  "flex items-center gap-3 border-l pl-4 pr-2 py-1 text-sm transition-all duration-300",
+                  isDone && "border-cyan-300/30 text-cyan-50",
+                  isActive && "border-cyan-300/45 text-foreground",
+                  !isDone && !isActive && "border-white/10 text-muted-foreground/40"
                 )}
               >
                 {isDone ? (

@@ -24,17 +24,16 @@ export function UploadOptionCard({
       disabled={disabled}
       onClick={() => onSelect(option.id)}
       className={cn(
-        "group relative w-full overflow-hidden rounded-[1.35rem] border p-4 text-left transition-all duration-200",
-        "bg-[linear-gradient(180deg,rgba(17,24,39,0.86),rgba(11,17,30,0.96))] hover:border-cyan-300/18 hover:bg-[linear-gradient(180deg,rgba(19,29,44,0.94),rgba(11,17,30,0.98))]",
+        "group relative w-full rounded-[1.2rem] border p-4 text-left transition-all duration-200",
+        "bg-white/[0.02] hover:border-white/12 hover:bg-white/[0.03]",
         selected &&
-          "border-cyan-300/28 bg-[linear-gradient(180deg,rgba(23,37,53,0.98),rgba(8,22,38,0.98))] shadow-[0_0_0_1px_rgba(34,211,238,0.14),0_0_34px_rgba(34,211,238,0.12)]",
-        disabled && "cursor-not-allowed opacity-70 hover:border-white/10 hover:bg-[linear-gradient(180deg,rgba(17,24,39,0.86),rgba(11,17,30,0.96))]"
+          "border-cyan-300/24 bg-cyan-400/[0.06] shadow-[0_0_0_1px_rgba(34,211,238,0.1)]",
+        disabled && "cursor-not-allowed opacity-70 hover:border-white/10 hover:bg-white/[0.02]"
       )}
     >
-      <div className="absolute inset-y-4 left-0 w-px rounded-full bg-transparent transition-all group-hover:bg-cyan-300/55 group-hover:shadow-[0_0_16px_rgba(34,211,238,0.7)]" />
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <p className="text-base font-semibold text-foreground">{option.name}</p>
+          <p className="text-sm font-semibold text-foreground">{option.name}</p>
           <p className="text-sm leading-6 text-muted-foreground">{option.description}</p>
         </div>
         <Badge
@@ -50,7 +49,7 @@ export function UploadOptionCard({
         </Badge>
       </div>
 
-      <div className="mt-4 rounded-xl border border-white/8 bg-white/[0.025] p-3">
+      <div className="mt-4 border-t border-white/8 pt-3">
         <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground/70">
           Best for
         </p>

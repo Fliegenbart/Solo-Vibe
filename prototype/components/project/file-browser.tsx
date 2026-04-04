@@ -52,8 +52,8 @@ function FileTreeItem({ node, depth = 0 }: { node: FileNode; depth?: number }) {
 
 export function FileBrowser({ files }: { files: FileNode[] }) {
   return (
-    <div className="app-panel overflow-hidden">
-      <div className="border-b border-white/8 bg-white/[0.03] px-4 py-3">
+    <div className="overflow-hidden rounded-[1.35rem] border border-white/8 bg-white/[0.015]">
+      <div className="border-b border-white/8 px-4 py-3">
         <span className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
           Files
         </span>

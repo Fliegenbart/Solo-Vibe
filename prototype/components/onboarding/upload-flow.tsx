@@ -66,43 +66,26 @@ export function UploadFlow() {
   };
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[0.95fr_1.25fr]">
-      <section className="app-panel relative overflow-hidden p-6 lg:p-7">
-        <div className="absolute inset-y-0 right-0 w-1/2 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.18),transparent_52%),radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.12),transparent_45%)]" />
-        <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/50 to-transparent" />
-        <Badge className="bg-white/8 text-white hover:bg-white/8">
+    <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+      <section className="app-panel p-6 lg:p-7">
+        <Badge className="bg-white/[0.05] text-white hover:bg-white/[0.05]">
           Closed beta prototype
         </Badge>
-        <h2 className="display-title mt-5 max-w-md text-4xl font-semibold text-white">
+        <h2 className="display-title mt-4 max-w-sm text-3xl font-semibold text-white">
           Bring your AI-built app here before it gets lost in a chat thread.
         </h2>
-        <p className="mt-4 max-w-md text-sm leading-7 text-zinc-300">
+        <p className="mt-3 max-w-md text-sm leading-6 text-zinc-300">
           Start with the code you already have. Solo-Vibe stores it safely,
           checks what it is, and only then suggests the next step.
         </p>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-3">
-          <div className="metric-shell">
-            <div className="relative">
-              <p className="eyebrow-label">Store</p>
-              <p className="mt-2 text-sm font-medium text-white">First snapshot created</p>
-            </div>
-          </div>
-          <div className="metric-shell">
-            <div className="relative">
-              <p className="eyebrow-label">Inspect</p>
-              <p className="mt-2 text-sm font-medium text-white">Runtime and structure detected</p>
-            </div>
-          </div>
-          <div className="metric-shell">
-            <div className="relative">
-              <p className="eyebrow-label">Guide</p>
-              <p className="mt-2 text-sm font-medium text-white">Next action stays clear</p>
-            </div>
-          </div>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <span className="telemetry-pill">Store</span>
+          <span className="telemetry-pill">Inspect</span>
+          <span className="telemetry-pill">Guide</span>
         </div>
 
-        <div className="mt-8 space-y-4">
+        <div className="mt-7 space-y-3">
           {uploadSteps.map((step, index) => {
             const active = index === stepIndex;
             const complete = index < stepIndex;
@@ -111,10 +94,10 @@ export function UploadFlow() {
               <div
                 key={step.id}
                 className={cn(
-                  "rounded-2xl border px-4 py-3 transition-all",
-                  active && "border-cyan-300/30 bg-cyan-400/[0.07] shadow-[0_0_24px_rgba(34,211,238,0.12)]",
-                  complete && "border-cyan-300/18 bg-cyan-400/[0.04]",
-                  !active && !complete && "border-white/8 bg-white/4"
+                  "rounded-[1.2rem] border px-4 py-3 transition-all",
+                  active && "border-cyan-300/24 bg-cyan-400/[0.05]",
+                  complete && "border-white/10 bg-white/[0.03]",
+                  !active && !complete && "border-white/8 bg-transparent"
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -130,7 +113,9 @@ export function UploadFlow() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-white">{step.label}</p>
-                    <p className="text-xs text-zinc-400">{step.description}</p>
+                    {active && (
+                      <p className="text-xs text-zinc-400">{step.description}</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -138,11 +123,11 @@ export function UploadFlow() {
           })}
         </div>
 
-        <div className="mt-8 rounded-2xl border border-white/10 bg-black/20 p-4">
+        <div className="mt-7 border-t border-white/8 pt-4">
           <p className="text-xs font-medium uppercase tracking-[0.16em] text-zinc-400">
             Builder protection
           </p>
-          <ul className="mt-3 space-y-3 text-sm text-zinc-200">
+          <ul className="mt-3 space-y-2 text-sm text-zinc-200">
             <li className="flex gap-3">
               <ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-300" />
               Your first version is saved before any risky server step.
@@ -175,15 +160,9 @@ export function UploadFlow() {
                   will check before anything gets deployed.
                 </p>
               </div>
-              <Badge
-                variant="outline"
-                className="border-cyan-300/20 bg-cyan-400/[0.12] text-cyan-100"
-              >
-                No Git required
-              </Badge>
             </div>
 
-            <div className="mt-6 grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
+            <div className="mt-6 grid gap-5 xl:grid-cols-[1.25fr_0.75fr]">
               <div className="grid gap-5">
                 <label className="block">
                   <span className="text-sm font-medium text-foreground">Project name</span>
@@ -210,7 +189,7 @@ export function UploadFlow() {
                 </div>
               </div>
 
-              <div className="rounded-[1.5rem] border border-dashed border-cyan-300/20 bg-cyan-400/[0.05] p-4">
+              <div className="rounded-[1.3rem] border border-white/8 bg-white/[0.02] p-4">
                 <div className="flex items-start gap-3">
                   {selectedSource === "zip" ? (
                     <PackageOpen className="mt-0.5 h-5 w-5 text-cyan-200" />
@@ -227,20 +206,16 @@ export function UploadFlow() {
                         {sampleUploads[selectedSource]}
                       </p>
                     )}
-                    <div className="mt-4 space-y-3 rounded-2xl border border-white/8 bg-black/20 p-4">
-                      <div>
-                        <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">
-                          What happens on review
-                        </p>
-                        <p className="mt-2 text-sm leading-6 text-zinc-200">
-                          Solo-Vibe checks project type, likely entry point, and the
-                          safest next action.
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-cyan-100/80">
-                        <ShieldCheck className="h-3.5 w-3.5 text-emerald-300" />
+                    <div className="mt-4 border-t border-white/8 pt-3">
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">
+                        On review
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-zinc-200">
+                        Solo-Vibe checks project type, likely entry point, and the safest next action.
+                      </p>
+                      <p className="mt-3 text-[11px] uppercase tracking-[0.16em] text-cyan-100/80">
                         Preview only, no deployment yet
-                      </div>
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -279,15 +254,6 @@ export function UploadFlow() {
               explanation second, deployment later.
             </p>
 
-            <div className="mt-4 flex flex-wrap gap-2">
-              <span className="telemetry-pill border-cyan-300/16 bg-cyan-400/[0.08] text-cyan-100">
-                Imported safely
-              </span>
-              <span className="telemetry-pill border-cyan-300/16 bg-cyan-400/[0.08] text-cyan-100">
-                Project understood
-              </span>
-            </div>
-
             <div className="mt-6 space-y-3">
               {uploadChecks.map((check, index) => {
                 const active = index === scanIndex && !inspectDone;
@@ -323,39 +289,40 @@ export function UploadFlow() {
               })}
             </div>
 
-            <div className="mt-6 rounded-[1.6rem] border border-white/8 bg-background/70 p-5">
-              <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="mt-6 rounded-[1.25rem] border border-white/8 bg-white/[0.02] p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/8 pb-4">
                 <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
                   Detected project summary
                 </p>
-                <span className="telemetry-pill border-cyan-300/16 bg-cyan-400/[0.08] text-cyan-100">
+                <p className="text-xs uppercase tracking-[0.16em] text-cyan-100/80">
                   Safe to create workspace
-                </span>
-              </div>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-4">
-                  <p className="text-xs text-muted-foreground">Project</p>
-                  <p className="mt-1 text-sm font-medium text-foreground">{projectName}</p>
-                </div>
-                <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-4">
-                  <p className="text-xs text-muted-foreground">Source</p>
-                  <p className="mt-1 text-sm font-medium text-foreground">{selectedOption.name}</p>
-                </div>
-                <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-4">
-                  <p className="text-xs text-muted-foreground">Runtime</p>
-                  <p className="mt-1 text-sm font-medium text-foreground">
-                    {detectedProjectSummary.runtime === "nodejs" ? "Node.js" : "Static"}
-                  </p>
-                </div>
-                <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-4">
-                  <p className="text-xs text-muted-foreground">Framework</p>
-                  <p className="mt-1 text-sm font-medium text-foreground">
-                    {detectedProjectSummary.framework}
-                  </p>
-                </div>
+                </p>
               </div>
 
-              <div className="mt-4 rounded-2xl border border-cyan-300/20 bg-cyan-400/[0.05] p-4 text-sm text-muted-foreground">
+              <dl className="mt-4 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
+                <div>
+                  <dt className="text-xs text-muted-foreground">Project</dt>
+                  <dd className="mt-1 font-medium text-foreground">{projectName}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-muted-foreground">Source</dt>
+                  <dd className="mt-1 font-medium text-foreground">{selectedOption.name}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-muted-foreground">Runtime</dt>
+                  <dd className="mt-1 font-medium text-foreground">
+                    {detectedProjectSummary.runtime === "nodejs" ? "Node.js" : "Static"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-muted-foreground">Framework</dt>
+                  <dd className="mt-1 font-medium text-foreground">
+                    {detectedProjectSummary.framework}
+                  </dd>
+                </div>
+              </dl>
+
+              <div className="mt-5 border-t border-white/8 pt-4 text-sm text-muted-foreground">
                 <p className="text-sm leading-6 text-zinc-100">
                   {detectedProjectSummary.plainLanguageSummary}
                 </p>
@@ -418,20 +385,8 @@ export function UploadFlow() {
               is, and the next action is obvious instead of overwhelming.
             </p>
 
-            <div className="mt-4 flex flex-wrap gap-2">
-              <span className="telemetry-pill border-cyan-300/16 bg-cyan-400/[0.08] text-cyan-100">
-                Imported safely
-              </span>
-              <span className="telemetry-pill border-cyan-300/16 bg-cyan-400/[0.08] text-cyan-100">
-                First snapshot created
-              </span>
-              <span className="telemetry-pill border-cyan-300/16 bg-cyan-400/[0.08] text-cyan-100">
-                Ready for server setup
-              </span>
-            </div>
-
             <div className="mt-6 grid gap-3 lg:grid-cols-[1.15fr_0.85fr]">
-              <div className="rounded-2xl border border-white/8 bg-background p-4">
+              <div className="rounded-[1.25rem] border border-white/8 bg-background p-4">
                 <p className="text-sm font-medium text-foreground">What Solo-Vibe guaranteed</p>
                 <ul className="mt-3 space-y-3 text-sm text-muted-foreground">
                   <li className="flex gap-3">
@@ -448,7 +403,7 @@ export function UploadFlow() {
                   </li>
                 </ul>
               </div>
-              <div className="rounded-2xl border border-cyan-300/20 bg-cyan-400/[0.06] p-4">
+              <div className="rounded-[1.25rem] border border-white/8 bg-white/[0.02] p-4">
                 <p className="text-xs uppercase tracking-[0.18em] text-cyan-100/80">
                   Next safe step
                 </p>

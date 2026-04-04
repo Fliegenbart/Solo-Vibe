@@ -16,39 +16,35 @@ export default async function HistoryPage({
     <div className="max-w-4xl space-y-6">
       <ProjectSubnav id={id} active="history" />
 
-      <div className="grid gap-4 md:grid-cols-[1.1fr_0.9fr]">
-        <div className="app-panel px-5 py-5">
-          <p className="eyebrow-label">History as safety net</p>
-          <h3 className="display-title mt-2 text-2xl font-semibold text-white">
-            Every safe point stays visible
-          </h3>
-          <p className="mt-3 text-sm leading-6 text-zinc-300">
-            This is not just an archive. It is the place where Solo-Vibe shows
-            which versions were safe, which ones failed, and what you can restore.
-          </p>
-        </div>
-        <div className="app-panel px-5 py-5">
-          <p className="eyebrow-label">Current trust state</p>
-          <div className="mt-4 grid gap-3">
-            <div className="rounded-2xl border border-white/8 bg-white/[0.025] px-4 py-3">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/65">
-                Last stable version
-              </p>
-              <p className="mt-2 text-sm font-medium text-white">
-                {project.lastStableRelease ?? "Initial snapshot"}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-white/8 bg-white/[0.025] px-4 py-3">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/65">
-                Restore promise
-              </p>
-              <p className="mt-2 text-sm leading-6 text-zinc-200">
-                Restoring a safe version makes that version live again. Your current project stays saved in history.
-              </p>
-            </div>
+      <section className="app-panel px-5 py-5">
+        <p className="eyebrow-label">History as safety net</p>
+        <h3 className="display-title mt-2 text-2xl font-semibold text-white">
+          Every safe point stays visible
+        </h3>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-300">
+          This is where Solo-Vibe shows which versions were safe, which ones failed,
+          and what can be restored without guessing.
+        </p>
+
+        <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 border-t border-white/8 pt-4 text-sm">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/65">
+              Last stable version
+            </p>
+            <p className="mt-1 font-medium text-white">
+              {project.lastStableRelease ?? "Initial snapshot"}
+            </p>
+          </div>
+          <div className="max-w-md">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/65">
+              Restore promise
+            </p>
+            <p className="mt-1 leading-6 text-zinc-200">
+              Restoring a safe version makes that version live again. Your current project stays saved in history.
+            </p>
           </div>
         </div>
-      </div>
+      </section>
 
       <div className="app-panel px-5 py-5">
         <div className="mb-5">
